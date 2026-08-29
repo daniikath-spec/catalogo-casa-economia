@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Distribuidora La Casa de la Economía</title>
+<meta name="theme-color" content="#0f766e">
+<style>
+:root{--brand:#0f766e;--brand2:#115e59;--bg:#f6f7f9;--card:#fff;--txt:#16202a;--muted:#667085;--line:#e5e7eb;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--brand),var(--brand2));color:white;padding:18px 14px 14px;box-shadow:0 2px 14px #0002}
+.brand{max-width:1050px;margin:auto}.brand h1{font-size:21px;margin:0 0 3px}.brand p{margin:0;opacity:.9;font-size:13px}
+.controls{max-width:1050px;margin:14px auto 0;display:grid;grid-template-columns:1fr 180px;gap:8px}
+input,select{border:0;border-radius:12px;padding:13px 14px;font-size:15px;outline:none;width:100%}
+main{max-width:1050px;margin:auto;padding:14px}
+.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--muted);margin:4px 2px 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px;display:flex;flex-direction:column;gap:8px;min-height:190px;box-shadow:0 1px 3px #00000008}
+.pic{height:70px;border-radius:11px;background:#eef2f3;display:flex;align-items:center;justify-content:center;color:#98a2b3;font-size:12px;font-weight:600}
+.name{font-weight:750;line-height:1.2;min-height:42px}.code{font-size:12px;color:var(--muted)}
+.price{font-weight:800;font-size:20px;color:var(--brand2)}.stock{font-size:12px;color:var(--muted)}
+.add{margin-top:auto;border:0;border-radius:11px;background:var(--brand);color:white;padding:10px;font-size:14px;font-weight:750;cursor:pointer}
+.add:disabled{background:#cbd5e1;cursor:not-allowed}.empty{text-align:center;color:var(--muted);padding:50px 10px}
+.cartbar{position:fixed;left:0;right:0;bottom:0;z-index:9;background:white;border-top:1px solid var(--line);box-shadow:0 -5px 20px #0002;padding:10px 14px env(safe-area-inset-bottom);display:none}
+.cartinner{max-width:1050px;margin:auto;display:flex;align-items:center;gap:10px}.cartinfo{flex:1}.cartinfo b{display:block}.cartinfo span{font-size:12px;color:var(--muted)}
+.whatsapp{background:#16a34a;color:white;border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
+.drawer{position:fixed;inset:0;z-index:20;background:#0007;display:none}.panel{position:absolute;right:0;top:0;bottom:0;width:min(440px,94vw);background:white;padding:16px;overflow:auto}
+.panelhead{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#eee;border-radius:9px;padding:8px 11px}
+.item{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:8px}.qty{display:flex;align-items:center;gap:7px}.qty button{width:30px;height:30px;border:1px solid var(--line);background:white;border-radius:8px}
+.total{font-size:20px;font-weight:850;margin:16px 0}.note{font-size:12px;color:var(--muted);margin-bottom:10px}
+@media(max-width:650px){.controls{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card{min-height:180px;padding:10px}.name{font-size:13px}.price{font-size:18px}.pic{height:58px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <h1>Distribuidora La Casa de la Economía</h1>
+    <p>Catálogo de productos · Selecciona cantidades y envía tu pedido por WhatsApp</p>
+    <div class="controls">
+      <input id="q" type="search" placeholder="Buscar producto o código…">
+      <select id="cat"><option value="">Todas las categorías</option></select>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="meta"><span id="count"></span><span>Precios referenciales</span></div>
+  <div id="grid" class="grid"></div>
+  <div id="empty" class="empty" style="display:none">No encontramos productos con esa búsqueda.</div>
+</main>
+
+<div id="cartbar" class="cartbar">
+  <div class="cartinner">
+    <div class="cartinfo" onclick="openCart()" style="cursor:pointer"><b id="cartCount">0 productos</b><span id="cartTotal">$0.00 · Ver carrito</span></div>
+    <button class="whatsapp" onclick="sendWhatsApp()">Enviar pedido</button>
+  </div>
+</div>
+
+<div id="drawer" class="drawer" onclick="if(event.target===this)closeCart()">
+  <div class="panel">
+    <div class="panelhead"><h2>Tu pedido</h2><button class="close" onclick="closeCart()">Cerrar</button></div>
+    <div id="cartItems"></div>
+    <div class="total" id="drawerTotal"></div>
+    <div class="note">El total es referencial. La distribuidora confirmará disponibilidad y valor final del pedido.</div>
+    <button class="whatsapp" style="width:100%" onclick="sendWhatsApp()">Enviar pedido por WhatsApp</button>
+  </div>
+</div>
+
+<script src="products.js"></script>
+<script>
+const PHONE="593987292646";
+const products=window.PRODUCTS||[];
+const cart=new Map();
+const q=document.getElementById('q'), cat=document.getElementById('cat'), grid=document.getElementById('grid');
+
+function norm(s){return (s||'').toString().normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase()}
+const cats=[...new Set(products.map(x=>x.g).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
+cats.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent='Categoría '+c;cat.appendChild(o)});
+
+function filtered(){
+ const t=norm(q.value), g=cat.value;
+ return products.filter(x=>(!g||x.g===g)&&(!t||norm(x.n).includes(t)||norm(x.c).includes(t)));
+}
+function render(){
+ const list=filtered();
+ document.getElementById('count').textContent=`${list.length.toLocaleString('es-EC')} productos`;
+ grid.innerHTML='';
+ document.getElementById('empty').style.display=list.length?'none':'block';
+ const frag=document.createDocumentFragment();
+ list.slice(0,300).forEach(x=>{
+   const d=document.createElement('div');d.className='card';
+   d.innerHTML=`<div class="pic">IMAGEN PRÓXIMAMENTE</div>
+   <div class="name">${esc(x.n)}</div>
+   <div class="code">Código: ${esc(x.c||'—')}</div>
+   <div class="price">$${Number(x.p||0).toFixed(2)}</div>
+   <div class="stock">${x.s>0?'Disponible':'Consultar disponibilidad'}</div>
+   <button class="add" ${x.s<=0?'disabled':''} data-code="${escAttr(x.c)}">${x.s>0?'Agregar':'Sin stock'}</button>`;
+   d.querySelector('.add').onclick=()=>add(x);
+   frag.appendChild(d);
+ });
+ grid.appendChild(frag);
+ if(list.length>300){const more=document.createElement('div');more.className='empty';more.textContent=`Mostrando 300 de ${list.length.toLocaleString('es-EC')}. Escribe en el buscador para encontrar cualquier producto.`;grid.appendChild(more)}
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function escAttr(s){return esc(s)}
+function add(x){const cur=cart.get(x.c)||{...x,q:0};cur.q++;cart.set(x.c,cur);updateCart()}
+function change(code,delta){const x=cart.get(code);if(!x)return;x.q+=delta;if(x.q<=0)cart.delete(code);else cart.set(code,x);updateCart();renderCart()}
+function totals(){let items=0,total=0;cart.forEach(x=>{items+=x.q;total+=x.q*x.p});return{items,total}}
+function updateCart(){const t=totals();document.getElementById('cartbar').style.display=t.items?'block':'none';document.getElementById('cartCount').textContent=`${t.items} unidad${t.items===1?'':'es'}`;document.getElementById('cartTotal').textContent=`$${t.total.toFixed(2)} · Ver carrito`}
+function openCart(){renderCart();document.getElementById('drawer').style.display='block'}
+function closeCart(){document.getElementById('drawer').style.display='none'}
+function renderCart(){const box=document.getElementById('cartItems');box.innerHTML='';cart.forEach(x=>{const d=document.createElement('div');d.className='item';d.innerHTML=`<div><b>${esc(x.n)}</b><div class="code">${esc(x.c)} · $${x.p.toFixed(2)} c/u</div></div><div class="qty"><button onclick="change('${escAttr(x.c)}',-1)">−</button><b>${x.q}</b><button onclick="change('${escAttr(x.c)}',1)">+</button></div>`;box.appendChild(d)});const t=totals();document.getElementById('drawerTotal').textContent=`Total referencial: $${t.total.toFixed(2)}`}
+function sendWhatsApp(){
+ if(!cart.size)return;
+ const lines=['Hola, deseo realizar el siguiente pedido:',''];
+ cart.forEach(x=>lines.push(`• ${x.q} x ${x.n} (${x.c}) — $${(x.q*x.p).toFixed(2)}`));
+ const t=totals();lines.push('',`TOTAL REFERENCIAL: $${t.total.toFixed(2)}`,'','Por favor confirmar disponibilidad y total final. Gracias.');
+ location.href=`https://wa.me/${PHONE}?text=${encodeURIComponent(lines.join('\n'))}`;
+}
+q.addEventListener('input',render);cat.addEventListener('change',render);render();
+</script>
+</body></html>
