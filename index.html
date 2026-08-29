@@ -50,7 +50,8 @@ main{max-width:1050px;margin:auto;padding:14px}.meta{display:flex;justify-conten
   <div class="panel">
     <div class="panelhead"><h2>Tu pedido</h2><button class="close" onclick="closeCart()">Cerrar</button></div>
     <div id="cartItems"></div>
-    <div class="checkoutbox">
+    <div class="checkoutbox" style="border:2px solid #f97316;background:#fff7ed">
+      <div style="font-size:17px;font-weight:900;color:#c2410c;margin-bottom:8px">📍 DATOS DE ENTREGA</div>
       <label for="customerName">👤 Nombre de quien recibe</label>
       <input id="customerName" type="text" placeholder="Ej. María Pérez" autocomplete="name">
 
@@ -68,6 +69,9 @@ main{max-width:1050px;margin:auto;padding:14px}.meta{display:flex;justify-conten
       <div id="locationStatus" class="locationstatus">También puedes enviar tu ubicación por WhatsApp después de mandar el pedido.</div>
       <input id="locationLink" type="url" placeholder="O pega aquí un enlace de Google Maps" style="margin-top:8px">
 
+    </div>
+    <div class="checkoutbox">
+      <div style="font-size:17px;font-weight:900;color:#c2410c;margin-bottom:8px">🚚 ENVÍO Y PAGO</div>
       <label for="shipping">🚚 Tarifa de envío</label>
       <select id="shipping" onchange="updateCheckout()">
         <option value="">Selecciona tu zona de entrega</option>
