@@ -125,7 +125,7 @@ function render(){
  const frag=document.createDocumentFragment();
  list.slice(0,300).forEach(x=>{
    const d=document.createElement('div');d.className='card';
-   d.innerHTML=`<div class="pic">IMAGEN PRÓXIMAMENTE</div>
+   d.innerHTML=`<div class="pic"><img src="${esc(x.c)}.jpg" alt="${esc(x.n)}" style="width:100%;height:100%;object-fit:contain" onerror="this.style.display='none';this.parentElement.innerHTML='IMAGEN PRÓXIMAMENTE'"></div>
    <div class="name">${esc(x.n)}</div>
    <div class="code">Código: ${esc(x.c||'—')}</div>
    <div class="price">$${Number(x.p||0).toFixed(2)}</div>
