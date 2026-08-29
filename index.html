@@ -4,38 +4,29 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Distribuidora La Casa de la Economía</title>
-<meta name="theme-color" content="#0f766e">
+<meta name="theme-color" content="#f97316">
 <style>
-:root{--brand:#0f766e;--brand2:#115e59;--bg:#f6f7f9;--card:#fff;--txt:#16202a;--muted:#667085;--line:#e5e7eb;--danger:#b42318}
+:root{--brand:#f97316;--brand2:#ea580c;--brand3:#ffedd5;--bg:#fff7ed;--card:#fff;--txt:#231f20;--muted:#6b7280;--line:#fed7aa;--danger:#b42318}
 *{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt)}
-header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,var(--brand),var(--brand2));color:white;padding:18px 14px 14px;box-shadow:0 2px 14px #0002}
-.brand{max-width:1050px;margin:auto}.brand h1{font-size:21px;margin:0 0 3px}.brand p{margin:0;opacity:.9;font-size:13px}
+header{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,#fb923c,var(--brand2));color:white;padding:12px 14px 14px;box-shadow:0 2px 14px #0002}
+.brand{max-width:1050px;margin:auto}.brandtop{display:flex;align-items:center;gap:12px}.logo{width:190px;max-width:48vw;background:white;border-radius:14px;padding:7px 10px;object-fit:contain}.brandtext{min-width:0}.brand h1{font-size:21px;margin:0 0 3px}.brand p{margin:0;opacity:.96;font-size:13px}
 .controls{max-width:1050px;margin:14px auto 0;display:grid;grid-template-columns:1fr 180px;gap:8px}
-input,select{border:0;border-radius:12px;padding:13px 14px;font-size:15px;outline:none;width:100%}
-main{max-width:1050px;margin:auto;padding:14px}
-.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--muted);margin:4px 2px 12px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px;display:flex;flex-direction:column;gap:8px;min-height:190px;box-shadow:0 1px 3px #00000008}
-.pic{height:70px;border-radius:11px;background:#eef2f3;display:flex;align-items:center;justify-content:center;color:#98a2b3;font-size:12px;font-weight:600}
-.name{font-weight:750;line-height:1.2;min-height:42px}.code{font-size:12px;color:var(--muted)}
-.price{font-weight:800;font-size:20px;color:var(--brand2)}.stock{font-size:12px;color:var(--muted)}
-.add{margin-top:auto;border:0;border-radius:11px;background:var(--brand);color:white;padding:10px;font-size:14px;font-weight:750;cursor:pointer}
-.add:disabled{background:#cbd5e1;cursor:not-allowed}.empty{text-align:center;color:var(--muted);padding:50px 10px}
-.cartbar{position:fixed;left:0;right:0;bottom:0;z-index:9;background:white;border-top:1px solid var(--line);box-shadow:0 -5px 20px #0002;padding:10px 14px env(safe-area-inset-bottom);display:none}
-.cartinner{max-width:1050px;margin:auto;display:flex;align-items:center;gap:10px}.cartinfo{flex:1}.cartinfo b{display:block}.cartinfo span{font-size:12px;color:var(--muted)}
-.whatsapp{background:#16a34a;color:white;border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}
-.drawer{position:fixed;inset:0;z-index:20;background:#0007;display:none}.panel{position:absolute;right:0;top:0;bottom:0;width:min(440px,94vw);background:white;padding:16px;overflow:auto}
-.panelhead{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#eee;border-radius:9px;padding:8px 11px}
-.item{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:8px}.qty{display:flex;align-items:center;gap:7px}.qty button{width:30px;height:30px;border:1px solid var(--line);background:white;border-radius:8px}
-.total{font-size:20px;font-weight:850;margin:16px 0}.note{font-size:12px;color:var(--muted);margin-bottom:10px}
-@media(max-width:650px){.controls{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card{min-height:180px;padding:10px}.name{font-size:13px}.price{font-size:18px}.pic{height:58px}}
+input,select{border:1px solid #fdba74;border-radius:12px;padding:13px 14px;font-size:15px;outline:none;width:100%;background:#fff;color:var(--txt)}
+input:focus,select:focus{border-color:var(--brand2);box-shadow:0 0 0 3px #ffedd5}
+main{max-width:1050px;margin:auto;padding:14px}.meta{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13px;color:var(--muted);margin:4px 2px 12px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:13px;display:flex;flex-direction:column;gap:8px;min-height:190px;box-shadow:0 3px 10px #ea580c12}.pic{height:70px;border-radius:11px;background:linear-gradient(135deg,#fff7ed,#ffedd5);display:flex;align-items:center;justify-content:center;color:#c2410c;font-size:12px;font-weight:700}.name{font-weight:750;line-height:1.2;min-height:42px}.code{font-size:12px;color:var(--muted)}.price{font-weight:850;font-size:20px;color:var(--brand2)}.stock{font-size:12px;color:var(--muted)}
+.add{margin-top:auto;border:0;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:white;padding:10px;font-size:14px;font-weight:800;cursor:pointer}.add:disabled{background:#cbd5e1;cursor:not-allowed}.empty{text-align:center;color:var(--muted);padding:50px 10px}
+.cartbar{position:fixed;left:0;right:0;bottom:0;z-index:9;background:white;border-top:2px solid #fdba74;box-shadow:0 -5px 20px #0002;padding:10px 14px env(safe-area-inset-bottom);display:none}.cartinner{max-width:1050px;margin:auto;display:flex;align-items:center;gap:10px}.cartinfo{flex:1}.cartinfo b{display:block}.cartinfo span{font-size:12px;color:var(--muted)}.whatsapp{background:#16a34a;color:white;border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer}.drawer{position:fixed;inset:0;z-index:20;background:#0007;display:none}.panel{position:absolute;right:0;top:0;bottom:0;width:min(440px,94vw);background:white;padding:16px;overflow:auto;border-left:4px solid var(--brand)}.panelhead{display:flex;justify-content:space-between;align-items:center}.close{border:0;background:#ffedd5;color:#9a3412;border-radius:9px;padding:8px 11px}.item{padding:12px 0;border-bottom:1px solid var(--line);display:grid;grid-template-columns:1fr auto;gap:8px}.qty{display:flex;align-items:center;gap:7px}.qty button{width:30px;height:30px;border:1px solid var(--line);background:white;border-radius:8px}.total{font-size:20px;font-weight:850;margin:16px 0;color:var(--brand2)}.note{font-size:12px;color:var(--muted);margin-bottom:10px}
+@media(max-width:650px){header{padding-top:10px}.brandtop{align-items:center}.logo{width:150px;max-width:44vw;padding:5px 7px;border-radius:12px}.brand h1{font-size:16px}.brand p{font-size:11px}.controls{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.card{min-height:180px;padding:10px}.name{font-size:13px}.price{font-size:18px}.pic{height:58px}}
 </style>
 </head>
 <body>
 <header>
   <div class="brand">
-    <h1>Distribuidora La Casa de la Economía</h1>
-    <p>Catálogo de productos · Selecciona cantidades y envía tu pedido por WhatsApp</p>
+    <div class="brandtop">
+      <img class="logo" src="logo.jpg" alt="Distribuidora La Casa de la Economía">
+      <div class="brandtext"><h1>Catálogo de productos</h1><p>Selecciona cantidades y envía tu pedido por WhatsApp</p></div>
+    </div>
     <div class="controls">
       <input id="q" type="search" placeholder="Buscar producto o código…">
       <select id="cat"><option value="">Todas las categorías</option></select>
