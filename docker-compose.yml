@@ -1,0 +1,11 @@
+services:
+  catalogo:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      APP_PASSWORD: "${APP_PASSWORD:?Define APP_PASSWORD en .env}"
+    volumes:
+      - ./catalogo_data:/data
+      - ./modelos:/models
+    restart: unless-stopped
