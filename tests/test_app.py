@@ -36,14 +36,14 @@ def test_zip():
     with tempfile.TemporaryDirectory() as t:
         p=Path(t);(p/'results').mkdir();(p/'uploads').mkdir()
         (p/'results'/'7861048601566.jpg').write_bytes(processor.make_jpg(Image.open(io.BytesIO(sample_png()))))
-        (p/'uploads'/'0002_producto.jpg').write_bytes(b'photo')
-        (p/'uploads'/'0002_codigo.jpg').write_bytes(b'barcode')
+        (p/'uploads'/'0001_producto.jpg').write_bytes(b'photo')
+        (p/'uploads'/'0001_codigo.jpg').write_bytes(b'barcode')
         rows=[dict(par=1,estado='OK',archivo_jpg='7861048601566.jpg'),dict(par=2,estado='PENDIENTE',detalle='ilegible')]
         processor.create_zip(p,rows,p/'done.zip')
         with zipfile.ZipFile(p/'done.zip') as z:
             assert 'PRODUCTOS_PROCESADOS/7861048601566.jpg' in z.namelist()
             assert 'reporte.csv' in z.namelist()
-            assert 'PENDIENTES_REVISION/0002_codigo.jpg' in z.namelist()
+            assert 'PENDIENTES_REVISION/0001_codigo.jpg' in z.namelist()
         print('PASS zip: jpg + report + pending photos')
 
 

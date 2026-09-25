@@ -102,7 +102,7 @@ def create_zip(folder: Path, rows: list[dict], export: Path):
             z.write(image, f"PRODUCTOS_PROCESADOS/{image.name}")
         for row in rows:
             if row.get("estado") != "OK":
-                pair = row["par"]
+                pair = row["par"] - 1
                 for file in (folder / "uploads").glob(f"{pair:04d}_*"):
                     z.write(file, f"PENDIENTES_REVISION/{file.name}")
         z.writestr("reporte.csv", "\ufeff" + buffer.getvalue())

@@ -1,4 +1,5 @@
 import json
+import re
 import os
 import secrets
 import shutil
@@ -9,7 +10,7 @@ from pathlib import Path
 from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile, BackgroundTasks
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from processor import get_barcodes, remove_background, make_jpg, create_zip
+from processor import get_barcodes, remove_background, make_jpg, create_zip, BARCODE_RE
 
 ROOT = Path(os.getenv("DATA_DIR", Path(__file__).resolve().parent / "data")).resolve()
 ROOT.mkdir(parents=True, exist_ok=True)
@@ -137,12 +138,13 @@ def worker(p: Path, total: int):
             row["detalle"] = str(e)[:250]
             state["failed"] += 1
         rows.append(row)
+        (p / "rows.json").write_text(json.dumps(rows, ensure_ascii=False), encoding="utf8")
         state["finished"] = i + 1
         state["message"] = f"Procesados {i + 1} de {total} productos"
         write(p, state)
     try:
         create_zip(p, rows, p / "catalogo_casa_economia.zip")
-        state.update(state="done", message="ZIP listo para descargar")
+        state.update(state="done", message="Resultados listos; descarga cada JPG por separado o, si quieres, el ZIP")
     except Exception as e:
         state.update(state="error", message=f"Error creando ZIP: {e}")
     write(p, state)
@@ -180,3 +182,73 @@ def download(job: str, x_app_key: str | None = Header(None)):
     if load(p)["state"] != "done":
         raise HTTPException(409, "El ZIP todavía no está preparado")
     return FileResponse(p / "catalogo_casa_economia.zip", filename=f"catalogo_casa_economia_{job[:8]}.zip", media_type="application/zip")
+
+
+@app.get("/api/jobs/{job}/results")
+def results(job: str, x_app_key: str | None = Header(None)):
+    auth(x_app_key)
+    p = directory(job)
+    f = p / "rows.json"
+    return {"rows": json.loads(f.read_text(encoding="utf8")) if f.exists() else [], "state": load(p)["state"]}
+
+
+@app.get("/api/jobs/{job}/images/{code}")
+def download_image(job: str, code: str, x_app_key: str | None = Header(None)):
+    auth(x_app_key)
+    if not BARCODE_RE.fullmatch(code):
+        raise HTTPException(400, "Código inválido")
+    p = directory(job)
+    file = p / "results" / (code + ".jpg")
+    if not file.is_file():
+        raise HTTPException(404, "Imagen no encontrada")
+    return FileResponse(file, filename=code + ".jpg", media_type="image/jpeg")
+
+
+@app.post("/api/jobs/{job}/fix-code")
+def fix_code(job: str, index: int = Form(...), code: str = Form(...), x_app_key: str | None = Header(None)):
+    auth(x_app_key)
+    p = directory(job)
+    if not BARCODE_RE.fullmatch(code):
+        raise HTTPException(400, "Introduce un código numérico de 8 a 14 dígitos")
+    with LOCK:
+        state = load(p)
+        if state["state"] != "done":
+            raise HTTPException(409, "Espera a que termine el lote")
+        rows_file = p / "rows.json"
+        if not rows_file.is_file():
+            raise HTTPException(404, "No hay resultados guardados")
+        rows = json.loads(rows_file.read_text(encoding="utf8"))
+        if not 0 <= index < len(rows):
+            raise HTTPException(400, "Producto fuera del lote")
+        if rows[index]["estado"] == "OK":
+            raise HTTPException(409, "Este producto ya está procesado")
+        if any(r["estado"] == "OK" and r["codigo_detectado"] == code for r in rows):
+            raise HTTPException(409, "Ese código ya está asignado a otro producto")
+        product = p / "uploads" / f"{index:04d}_producto.jpg"
+        if not product.exists():
+            raise HTTPException(404, "No existe la fotografía original del producto")
+        try:
+            jpg = make_jpg(remove_background(product))
+        except Exception as exc:
+            raise HTTPException(422, "No se pudo recortar esta fotografía: " + str(exc)[:160])
+        (p / "results" / (code + ".jpg")).write_bytes(jpg)
+        rows[index].update(estado="OK", codigo_detectado=code, archivo_jpg=code+".jpg",
+                           detalle=f"Código confirmado manualmente · {len(jpg)/1024:.1f} KB")
+        rows_file.write_text(json.dumps(rows, ensure_ascii=False), encoding="utf8")
+        create_zip(p, rows, p / "catalogo_casa_economia.zip")
+        state["ok"] = sum(r["estado"] == "OK" for r in rows)
+        state["failed"] = len(rows) - state["ok"]
+        write(p, state)
+        return {"row": rows[index], "ok": state["ok"], "failed": state["failed"]}
+
+
+@app.get("/api/jobs/{job}/original/{index}/{kind}")
+def original(job: str, index: int, kind: str, x_app_key: str | None = Header(None)):
+    auth(x_app_key)
+    if not 0 <= index < MAX_PAIRS or kind not in ("codigo", "producto"):
+        raise HTTPException(400, "Imagen inválida")
+    p = directory(job)
+    file = p / "uploads" / f"{index:04d}_{kind}.jpg"
+    if not file.is_file():
+        raise HTTPException(404, "Foto original no encontrada")
+    return FileResponse(file, media_type="image/jpeg")
