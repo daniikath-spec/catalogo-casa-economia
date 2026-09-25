@@ -1,6 +1,6 @@
 # La Casa de la Economía — procesador masivo real (v2)
 
-Aplicación web **independiente de la tienda e inventario**. Selecciona **hasta 800 fotografías en el mismo selector** (400 fotografías del producto + 400 de su código), revisa las parejas y pulsa «Subir y procesar todo». Envía las parejas una a una para no enviar un formulario gigantesco al servidor. El servidor procesa en segundo plano y entrega **un solo ZIP** con JPG individuales nombrados con el código legible, 800×800, fondo blanco, tamaño entre 60 y 120 KiB; también incluye `reporte.csv` y fotos con lectura ambigua/errónea en `PENDIENTES_REVISION/`.
+Aplicación web **independiente de la tienda e inventario**. Selecciona **hasta 800 fotografías en el mismo selector** (400 fotografías del producto + 400 de su código), revisa las parejas y pulsa «Subir y procesar todo». Envía las parejas una a una para no enviar un formulario gigantesco al servidor. El servidor procesa en segundo plano y ofrece **descarga JPG individual por producto y ZIP opcional** con JPG individuales nombrados con el código legible, 800×800, fondo blanco, tamaño entre 60 y 120 KiB; también incluye `reporte.csv` y fotos con lectura ambigua/errónea en `PENDIENTES_REVISION/`.
 
 ## Qué cambia con respecto al ZIP anterior
 - **No usa Photoroom ni pide su API.** Usa `rembg` + modelo `u2net` para quitar el fondo. El modelo se descarga una vez al comenzar, por lo que la primera ejecución tarda más. Verifica licencia del modelo seleccionado para uso comercial antes de producción.
@@ -35,3 +35,11 @@ Para 400 productos al día, comienza con prueba de 3, luego 10, 25 y 100. Un ser
 - Algunas fotos con transparencia o empaques brillantes requieren revisión manual. No es garantía de 100% de recortes perfectos.
 - JPG mínimo de 60 KiB se consigue con comentario JPEG inocuo si el archivo optimizado ya pesa menos: esto no cambia los píxeles. Se rechazan imágenes que exceden 120 KiB incluso en calidad 18 con submuestreo 4:4:4.
 - El ZIP anterior de Photoroom no es la base de esta versión y no se necesita pagar Photoroom Ultra.
+
+
+## Correcciones de esta revisión (25-09-2026)
+- Botón para descargar un JPG por producto, con nombre del código. ZIP queda opcional.
+- Botón para ver la foto original de un código que falló, escribir el código correcto y volver a procesar solo ese producto.
+- Corregida la numeración de las fotografías pendientes dentro del ZIP.
+- **No se ha validado el recorte real de rembg con 800 fotografías ni la calidad comercial de todos los productos.** Las pruebas automatizadas simulan el recorte y no reemplazan una prueba visual sobre originales.
+- Un lote de 800 fotos corresponde a **400 productos** porque aquí cada producto usa dos fotografías. No confundir con 800 productos al día.
